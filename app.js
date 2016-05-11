@@ -1,0 +1,42 @@
+/**
+ * Module dependencies.
+ */
+
+var express = require('express')
+  , http = require('http')
+  , path = require('path')
+  , fs = require("fs")
+  , Sequelize = require('sequelize');
+
+var sequelize = new Sequelize('fastplate', 'root', '1234', { host: 'localhost', dialect: 'mysql', pool: { max: 5, min: 0, idle: 10000}});
+
+var appFasplate = module.exports = express();
+
+// all environments
+appFasplate.set('sequelize',sequelize);
+appFasplate.set('http', http);
+appFasplate.set('port', process.env.PORT || 6000);
+appFasplate.use(express.favicon());
+appFasplate.use(express.logger('dev'));
+appFasplate.use(express.bodyParser());
+appFasplate.use(express.methodOverride());
+appFasplate.use(appFasplate.router);
+appFasplate.use(require('./routes/estado'));
+appFasplate.use(require('./routes/funcion'));
+appFasplate.use(require('./routes/maquinaestado'));
+appFasplate.use(require('./routes/pedido'));
+appFasplate.use(require('./routes/pedidodetalle'));
+appFasplate.get("*",function(request, response, next){
+	res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
+    next();
+});
+
+// development only
+if ('development' == appFasplate.get('env')) {
+	appFasplate.use(express.errorHandler());
+}
+
+http.createServer(appFasplate).listen(appFasplate.get('port'), function(){
+  console.log('Express server listening on port ' + appFasplate.get('port'));
+});
