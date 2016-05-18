@@ -9,4 +9,4 @@ appFastplate.get('/funcion/:funcionid', funcion.findById);
 appFastplate.post('/funcion', funcion.create);
 appFastplate.put('/funcion', funcion.updateAll);
 appFastplate.path('/funcion', funcion.updatePart);
-appFastplate.delete('/funcion', funcion.deleteById);
+appFastplate.delete('/funcion/:funcionid', funcion.deleteById);
