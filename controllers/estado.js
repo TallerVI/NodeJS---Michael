@@ -33,22 +33,35 @@ var create 			= function(request, response){
 		    	 descripcion : request.body.descripcion
 		     }, {transaction : transaction})
 		]);
-	}).then(function(result){
-		response.jsonp(result);
+	}).then(function(estado){
+		response.jsonp(estado);
 	}).catch(function(error){
 		response.jsonp({response : error});
 	});
 };
-var updateAll		= function(request, response){
-	response.jsonp({ response : "Implementar updateAll"});
+var updateAll 		= function(request, response){
+	response.status(500).jsonp({ response : "Implementar updateAll" });
 };
-
-var updatePart		= function(request,response){
-	response.jsonp({ response : "Implementar udpatePart" });
+var updatePart 		= function(request, response){
+	response.status(500).jsonp({ response : "Implementar updatePart" });
 };
-
-var deleteById		= function(request, response){
-	response.jsonp({ response : "Implementar deleteById" });
+var deleteById 		= function(request, response){
+	sequelize.transaction(
+	).then(function(transaction){
+		estado.destroy(
+			{ where : { estadoid : request.params.estadoid }, transaction : transaction }
+		).then(function( rowdeleted ){
+			if(rowdeleted != request.params.estadoid ){
+				transaction.rollback();
+				response.status(500).jsonp({ response : "No se ha podido eliminar el estado" });
+			} else {
+				transaction.commit();
+				response.status(200).jsonp([{ estado : "/estado/" + request.params.estadoid }]);
+			}
+		});
+	}).catch(function(error){
+		response.status(500).jsonp(error);
+	});
 };
 
 /**
@@ -58,6 +71,6 @@ var deleteById		= function(request, response){
 exports.all 		= all;
 exports.findById 	= findById;
 exports.create 		= create;
-exports.updateAll	= updateAll;
-exports.udpatePart 	= updatePart;
-exports.deleteById	= deleteById;
+exports.updateAll 	= updateAll;
+exports.updatePart 	= updatePart;
+exports.deleteById 	= deleteById;
