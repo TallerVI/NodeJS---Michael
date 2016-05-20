@@ -19,6 +19,10 @@ module.exports = function(sequelize, DataTypes) {
         key: 'articuloid'
       }
     },
+    cantidad: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
     maquinaestadoid: {
       type: DataTypes.INTEGER(11),
       allowNull: true,

@@ -44,6 +44,7 @@ var create 			= function(request, response){
 		     pedidodetalle.create({
 		    	 pedidoid : request.body.pedidoid,
 		    	 articuloid : request.body.articuloid,
+		    	 cantidad : request.body.cantidad,
 		    	 maquinaestadoid : request.body.maquinaestadoid
 		     }, {transaction : transaction})
 		]);
@@ -71,7 +72,7 @@ var deleteById 		= function(request, response){
 		pedidodetalle.destroy(
 			{ where : { pedidodetalleid : request.params.pedidodetalleid }, transaction : transaction }
 		).then(function( rowdeleted ){
-			if(rowdeleted != request.params.pedidodetalleid ){
+			if( rowdeleted == 0 ){
 				transaction.rollback();
 				response.status(500).jsonp({ response : "No se ha podido eliminar el pedidodetalle" });
 			} else {

@@ -77,7 +77,7 @@ var deleteById 		= function(request, response){
 		pedido.destroy(
 			{ where : { pedidoid : request.params.pedidoid }, transaction : transaction }
 		).then(function( rowdeleted ){
-			if(rowdeleted != request.params.pedidoid ){
+			if( rowdeleted == 0 ){
 				transaction.rollback();
 				response.status(500).jsonp({ response : "No se ha podido eliminar el pedido" });
 			} else {

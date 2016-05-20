@@ -70,7 +70,7 @@ var deleteById 		= function(request, response){
 		maquinaestado.destroy(
 			{ where : { maquinaestadoid : request.params.maquinaestadoid }, transaction : transaction }
 		).then(function( rowdeleted ){
-			if(rowdeleted != request.params.maquinaestadoid ){
+			if( rowdeleted == 0 ){
 				transaction.rollback();
 				response.status(500).jsonp({ response : "No se ha podido eliminar el maquinaestado" });
 			} else {
