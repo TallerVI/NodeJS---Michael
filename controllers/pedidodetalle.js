@@ -45,7 +45,8 @@ var create 			= function(request, response){
 		    	 pedidoid : request.body.pedidoid,
 		    	 articuloid : request.body.articuloid,
 		    	 cantidad : request.body.cantidad,
-		    	 maquinaestadoid : request.body.maquinaestadoid
+		    	 maquinaestadoid : request.body.maquinaestadoid,
+		    	 precio : request.body.precio
 		     }, {transaction : transaction})
 		]);
 	}).then(function(pedidodetalle){
