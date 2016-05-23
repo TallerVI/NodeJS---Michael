@@ -59,7 +59,33 @@ var create 			= function(request, response){
 	});
 };
 var updateAll 		= function(request, response){
-	response.status(500).jsonp({ response : "Implementar updateAll" });
+	sequelize.transaction(
+	).then(function(transaction){
+		maquinaestado.update(
+			{ 
+				funcionid : request.body.funcionid,
+				estadoid : request.body.estadoid
+			},
+			{ where : { maquinaestadoid : request.body.maquinaestadoid } }, 
+			{ transaction : transaction }
+		).then(function( rowUpdated ){
+			if(rowUpdated.pop() == 0){
+				transaction.rollback();
+				response.status(500).jsonp({ response : "No se ha podido actualizar maquinaestado" });
+			} else {
+				transaction.commit();
+				maquinaestado.findById(request.body.maquinaestadoid).then(function(maquinaestado){
+					maquinaestado['dataValues'].estado = "/estado/" + maquinaestado['dataValues'].estadoid;
+					maquinaestado['dataValues'].funcion = "/funcion/" + maquinaestado['dataValues'].funcionid;
+					delete maquinaestado['dataValues'].estadoid;
+					delete maquinaestado['dataValues'].funcionid;
+					response.status(200).jsonp(maquinaestado);
+				});
+			}
+		});
+	}).catch(function(error){
+		response.status(500).jsonp(error);
+	});
 };
 var updatePart 		= function(request, response){
 	response.status(500).jsonp({ response : "Implementar updatePart" });

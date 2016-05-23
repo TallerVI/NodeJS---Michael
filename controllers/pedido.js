@@ -13,32 +13,26 @@ var pedido			= sequelize.import("../models/pedidos");
  * Private Functions 
  * */
 var all 			= function(request, response){
-	pedido.findAll().then(function(pedido){
-		pedido.forEach(function(item){
-			item['dataValues'].maquinaestado = "/maquinaestado/" + item['dataValues'].maquinaestadoid;
-			item['dataValues'].usuario = "/usuario/" + item['dataValues'].usuarioid;
-			item['dataValues'].mesa = "/mesa/" + item['dataValues'].mesaid;
-			delete item['dataValues'].maquinaestadoid;
-			delete item['dataValues'].usuarioid;
-			delete item['dataValues'].mesaid;
+	pedido.findAll().then(function(pedidos){
+		pedidos.forEach(function( pedido ){
+			pedido['dataValues'].usuario = "/usuario/" + pedido['dataValues'].usuarioid;
+			pedido['dataValues'].mesa = "/mesa/" + pedido['dataValues'].mesaid;
+			pedido['dataValues'].maquinaestado = "/maquinaestado/" + pedido['dataValues'].maquinaestadoid;
+			delete pedido['dataValues'].usuarioid;
+			delete pedido['dataValues'].mesaid;
+			delete pedido['dataValues'].maquinaestadoid;
 		});
-		response.jsonp(pedido);
+		response.jsonp(pedidos);
 	});
 };
 var findById 		= function(request, response){
-	pedido.findAll({
-		where : {
-			pedidoid : request.params.pedidoid
-		}
-	}).then(function(pedido){
-		pedido.forEach(function(item){
-			item['dataValues'].maquinaestado = "/maquinaestado/" + item['dataValues'].maquinaestadoid;
-			item['dataValues'].usuario = "/usuario/" + item['dataValues'].usuarioid;
-			item['dataValues'].mesa = "/mesa/" + item['dataValues'].mesaid;
-			delete item['dataValues'].maquinaestadoid;
-			delete item['dataValues'].usuarioid;
-			delete item['dataValues'].mesaid;
-		});
+	pedido.findById(request.params.pedidoid).then(function(pedido){
+		pedido['dataValues'].usuario = "/usuario/" + pedido['dataValues'].usuarioid;
+		pedido['dataValues'].mesa = "/mesa/" + pedido['dataValues'].mesaid;
+		pedido['dataValues'].maquinaestado = "/maquinaestado/" + pedido['dataValues'].maquinaestadoid;
+		delete pedido['dataValues'].usuarioid;
+		delete pedido['dataValues'].mesaid;
+		delete pedido['dataValues'].maquinaestadoid;
 		response.jsonp(pedido);
 	});
 };
@@ -46,19 +40,19 @@ var create 			= function(request, response){
 	sequelize.transaction(function(transaction){
 		return Promise.all([
 		     pedido.create({ 
-		    	 maquinaestadoid : request.body.maquinaestadoid,
 		    	 usuarioid : request.body.usuarioid,
-		    	 mesaid : request.body.mesaid
+		    	 mesaid : request.body.mesaid,
+		    	 maquinaestadoid : request.body.maquinaestadoid
 		     }, {transaction : transaction})
 		]);
-	}).then(function(pedido){
-		pedido.forEach(function(item){
-			item['dataValues'].maquinaestado = "/maquinaestado/" + item['dataValues'].maquinaestadoid;
-			item['dataValues'].usuario = "/usuario/" + item['dataValues'].usuarioid;
-			item['dataValues'].mesa = "/mesa/" + item['dataValues'].mesaid;
-			delete item['dataValues'].maquinaestadoid;
-			delete item['dataValues'].usuarioid;
-			delete item['dataValues'].mesaid;
+	}).then(function(pedidos){
+		pedidos.forEach(function(pedido){
+			pedido['dataValues'].usuario = "/usuario/" + pedido['dataValues'].usuarioid;
+			pedido['dataValues'].mesa = "/mesa/" + pedido['dataValues'].mesaid;
+			pedido['dataValues'].maquinaestado = "/maquinaestado/" + pedido['dataValues'].maquinaestadoid;
+			delete pedido['dataValues'].usuarioid;
+			delete pedido['dataValues'].mesaid;
+			delete pedido['dataValues'].maquinaestadoid;
 		});
 		response.jsonp(pedido);
 	}).catch(function(error){
@@ -66,7 +60,36 @@ var create 			= function(request, response){
 	});
 };
 var updateAll 		= function(request, response){
-	response.status(500).jsonp({ response : "Implementar updateAll" });
+	sequelize.transaction(
+	).then(function(transaction){
+		pedido.update(
+			{ 
+		    	usuarioid : request.body.usuarioid,
+		    	mesaid : request.body.mesaid,
+				maquinaestadoid : request.body.maquinaestadoid
+			},
+			{ where : { pedidoid : request.body.pedidoid } }, 
+			{ transaction : transaction }
+		).then(function( rowUpdated ){
+			if(rowUpdated.pop() == 0){
+				transaction.rollback();
+				response.status(500).jsonp({ response : "No se ha podido actualizar pedido" });
+			} else {
+				transaction.commit();
+				pedido.findById(request.body.pedidoid).then(function(pedido){
+					pedido['dataValues'].usuario = "/usuario/" + pedido['dataValues'].usuarioid;
+					pedido['dataValues'].mesa = "/mesa/" + pedido['dataValues'].mesaid;
+					pedido['dataValues'].maquinaestado = "/maquinaestado/" + pedido['dataValues'].maquinaestadoid;
+					delete pedido['dataValues'].usuarioid;
+					delete pedido['dataValues'].mesaid;
+					delete pedido['dataValues'].maquinaestadoid;
+					response.status(200).jsonp(pedido);
+				});
+			}
+		});
+	}).catch(function(error){
+		response.status(500).jsonp(error);
+	});
 };
 var updatePart 		= function(request, response){
 	response.status(500).jsonp({ response : "Implementar updatePart" });
