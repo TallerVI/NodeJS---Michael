@@ -46,14 +46,13 @@ var create 			= function(request, response){
 		     }, {transaction : transaction})
 		]);
 	}).then(function(pedidos){
-		pedidos.forEach(function(pedido){
-			pedido['dataValues'].usuario = "/usuario/" + pedido['dataValues'].usuarioid;
-			pedido['dataValues'].mesa = "/mesa/" + pedido['dataValues'].mesaid;
-			pedido['dataValues'].maquinaestado = "/maquinaestado/" + pedido['dataValues'].maquinaestadoid;
-			delete pedido['dataValues'].usuarioid;
-			delete pedido['dataValues'].mesaid;
-			delete pedido['dataValues'].maquinaestadoid;
-		});
+		var pedido = pedidos.pop();
+		pedido['dataValues'].usuario = "/usuario/" + pedido['dataValues'].usuarioid;
+		pedido['dataValues'].mesa = "/mesa/" + pedido['dataValues'].mesaid;
+		pedido['dataValues'].maquinaestado = "/maquinaestado/" + pedido['dataValues'].maquinaestadoid;
+		delete pedido['dataValues'].usuarioid;
+		delete pedido['dataValues'].mesaid;
+		delete pedido['dataValues'].maquinaestadoid;
 		response.jsonp(pedido);
 	}).catch(function(error){
 		response.jsonp({response : error});
