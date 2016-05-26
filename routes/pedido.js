@@ -8,5 +8,5 @@ appFastplate.get('/pedido', pedido.all);
 appFastplate.get('/pedido/:pedidoid', pedido.findById);
 appFastplate.post('/pedido', pedido.create);
 appFastplate.put('/pedido', pedido.updateAll);
-appFastplate.path('/pedido', pedido.updatePart);
+appFastplate.patch('/pedido', pedido.updatePart);
 appFastplate.delete('/pedido/:pedidoid', pedido.deleteById);

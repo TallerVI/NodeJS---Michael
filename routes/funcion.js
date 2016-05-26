@@ -8,5 +8,5 @@ appFastplate.get('/funcion', funcion.all);
 appFastplate.get('/funcion/:funcionid', funcion.findById);
 appFastplate.post('/funcion', funcion.create);
 appFastplate.put('/funcion', funcion.updateAll);
-appFastplate.path('/funcion', funcion.updatePart);
+appFastplate.patch('/funcion', funcion.updatePart);
 appFastplate.delete('/funcion/:funcionid', funcion.deleteById);

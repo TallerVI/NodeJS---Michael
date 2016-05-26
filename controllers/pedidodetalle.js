@@ -46,16 +46,10 @@ var updateAll 		= function(request, response){
 	sequelize.transaction(
 	).then(function(transaction){
 		var params = pedidoDetalleUtils.getParamsForUpdateAllFromRequest(request)
-		pedidodetalle.upsert(params.fields, params.options,	{ transaction : transaction }
-		).then(function( rowUpdated ){
+		pedidodetalle.upsert(params.fields, params.options,	{ transaction : transaction }).then(function( rowUpdated ){
 			if(rowUpdated){
 				transaction.commit();
-				pedidodetalle.findAll({
-					where : {
-						pedidoid : request.body.pedidoid,
-						articuloid :  request.body.articuloid
-					}
-				}).then(function(pedidodetalles){
+				pedidodetalle.findAll(pedidoDetalleUtils.getParamsForFindByIdFromRequest(request)).then(function(pedidodetalles){
 					pedidodetalles.forEach(function( pedidodetalle ){
 						pedidodetalle = pedidoDetalleUtils.toHATEOAS( pedidodetalle );
 					});
