@@ -15,7 +15,7 @@ var appFasplate = module.exports = express();
 // all environments
 appFasplate.set('sequelize',sequelize);
 appFasplate.set('http', http);
-appFasplate.set('port', process.env.PORT || 6000);
+appFasplate.set('port', process.env.PORT || 2000);
 appFasplate.use(express.favicon());
 appFasplate.use(express.logger('dev'));
 appFasplate.use(express.bodyParser());
@@ -26,11 +26,6 @@ appFasplate.use(require('./routes/funcion'));
 appFasplate.use(require('./routes/maquinaestado'));
 appFasplate.use(require('./routes/pedido'));
 appFasplate.use(require('./routes/pedidodetalle'));
-appFasplate.get("*",function(request, response, next){
-	res.header('Access-Control-Allow-Origin', '*');
-    res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
-    next();
-});
 
 // development only
 if ('development' == appFasplate.get('env')) {

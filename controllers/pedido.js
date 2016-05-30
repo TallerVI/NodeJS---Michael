@@ -8,15 +8,17 @@
  * */
 var sequelize		= require ("../app").get("sequelize");
 var pedido			= sequelize.import("../models/pedidos");
-
+var host			= require ("./host");
 /** 
  * Private Functions 
  * */
 var all 			= function(request, response){
+	var h = host.getHost(request, response);
 	pedido.findAll().then(function(pedidos){
 		pedidos.forEach(function( pedido ){
-			pedido['dataValues'].usuario = "/usuario/" + pedido['dataValues'].usuarioid;
-			pedido['dataValues'].mesa = "/mesa/" + pedido['dataValues'].mesaid;
+			pedido['dataValues'].pedidodetalle = h + "/pedido/" + pedido['dataValues'].pedidoid + '/pedidodetalle';
+			pedido['dataValues'].usuario = h + "/usuario/" + pedido['dataValues'].usuarioid;
+			pedido['dataValues'].mesa = h + "/mesa/" + pedido['dataValues'].mesaid;
 			pedido['dataValues'].maquinaestado = "/maquinaestado/" + pedido['dataValues'].maquinaestadoid;
 			delete pedido['dataValues'].usuarioid;
 			delete pedido['dataValues'].mesaid;
@@ -26,14 +28,21 @@ var all 			= function(request, response){
 	});
 };
 var findById 		= function(request, response){
-	pedido.findById(request.params.pedidoid).then(function(pedido){
-		pedido['dataValues'].usuario = "/usuario/" + pedido['dataValues'].usuarioid;
-		pedido['dataValues'].mesa = "/mesa/" + pedido['dataValues'].mesaid;
-		pedido['dataValues'].maquinaestado = "/maquinaestado/" + pedido['dataValues'].maquinaestadoid;
-		delete pedido['dataValues'].usuarioid;
-		delete pedido['dataValues'].mesaid;
-		delete pedido['dataValues'].maquinaestadoid;
-		response.jsonp(pedido);
+	pedido.findAll({
+		where : {
+			pedidoid : request.params.pedidoid
+		}
+	}).then(function(pedidos){
+		pedidos.forEach(function( pedido ){
+			pedido['dataValues'].pedidodetalle = "/pedido/" + pedido['dataValues'].pedidoid + '/pedidodetalle';
+			pedido['dataValues'].usuario = "/usuario/" + pedido['dataValues'].usuarioid;
+			pedido['dataValues'].mesa = "/mesa/" + pedido['dataValues'].mesaid;
+			pedido['dataValues'].maquinaestado = "/maquinaestado/" + pedido['dataValues'].maquinaestadoid;
+			delete pedido['dataValues'].usuarioid;
+			delete pedido['dataValues'].mesaid;
+			delete pedido['dataValues'].maquinaestadoid;
+		});
+		response.jsonp(pedidos);
 	});
 };
 var create 			= function(request, response){
@@ -47,6 +56,7 @@ var create 			= function(request, response){
 		]);
 	}).then(function(pedidos){
 		var pedido = pedidos.pop();
+		pedido['dataValues'].pedidodetalle = "/pedido/" + pedido['dataValues'].pedidoid + '/pedidodetalle';
 		pedido['dataValues'].usuario = "/usuario/" + pedido['dataValues'].usuarioid;
 		pedido['dataValues'].mesa = "/mesa/" + pedido['dataValues'].mesaid;
 		pedido['dataValues'].maquinaestado = "/maquinaestado/" + pedido['dataValues'].maquinaestadoid;
@@ -76,6 +86,7 @@ var updateAll 		= function(request, response){
 			} else {
 				transaction.commit();
 				pedido.findById(request.body.pedidoid).then(function(pedido){
+					pedido['dataValues'].pedidodetalle = "/pedido/" + pedido['dataValues'].pedidoid + '/pedidodetalle';
 					pedido['dataValues'].usuario = "/usuario/" + pedido['dataValues'].usuarioid;
 					pedido['dataValues'].mesa = "/mesa/" + pedido['dataValues'].mesaid;
 					pedido['dataValues'].maquinaestado = "/maquinaestado/" + pedido['dataValues'].maquinaestadoid;
@@ -112,6 +123,28 @@ var deleteById 		= function(request, response){
 	});
 };
 
+var findByMesa		= function(request, response){
+	pedido.findAll({
+		where : {
+			mesaid : request.params.mesaid,
+			maquinaestadoid : { 
+				$ne : 10
+			}
+		}
+	}).then(function(pedidos){
+		pedidos.forEach(function( pedido ){
+			pedido['dataValues'].pedidodetalle = "/pedido/" + pedido['dataValues'].pedidoid + '/pedidodetalle';
+			pedido['dataValues'].usuario = "/usuario/" + pedido['dataValues'].usuarioid;
+			pedido['dataValues'].mesa = "/mesa/" + pedido['dataValues'].mesaid;
+			pedido['dataValues'].maquinaestado = "/maquinaestado/" + pedido['dataValues'].maquinaestadoid;
+			delete pedido['dataValues'].usuarioid;
+			delete pedido['dataValues'].mesaid;
+			delete pedido['dataValues'].maquinaestadoid;
+		});
+		response.jsonp(pedidos);
+	});
+};
+
 /**
  * Export functions
  * 
@@ -122,3 +155,4 @@ exports.create 		= create;
 exports.updateAll 	= updateAll;
 exports.updatePart 	= updatePart;
 exports.deleteById 	= deleteById;
+exports.findByMesa	= findByMesa;

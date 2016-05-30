@@ -13,8 +13,11 @@ var estado		= sequelize.import("../models/estados");
  * Private Functions 
  * */
 var all 			= function(request, response){
-	estado.findAll().then(function(estado){
-		response.jsonp(estado);
+	estado.findAll().then(function(estados){
+		estados.forEach(function(estado){
+			estado['dataValues'].maquinaestado = "/estado/" + estado['dataValues'].estadoid + '/maquinaestado';
+		});
+		response.jsonp(estados);
 	});
 };
 var findById 		= function(request, response){
@@ -22,8 +25,11 @@ var findById 		= function(request, response){
 		where : {
 			estadoid : request.params.estadoid
 		}
-	}).then(function(estado){
-		response.jsonp(estado);
+	}).then(function(estados){
+		estados.forEach(function(estado){
+			estado['dataValues'].maquinaestado = "/estado/" + estado['dataValues'].estadoid + '/maquinaestado';
+		});
+		response.jsonp(estados);
 	});
 };
 var create 			= function(request, response){
@@ -33,8 +39,11 @@ var create 			= function(request, response){
 		    	 descripcion : request.body.descripcion
 		     }, {transaction : transaction})
 		]);
-	}).then(function(estado){
-		response.jsonp(estado);
+	}).then(function(estados){
+		estados.forEach(function(estado){
+			estado['dataValues'].maquinaestado = "/estado/" + estado['dataValues'].estadoid + '/maquinaestado';
+		});
+		response.jsonp(estados);
 	}).catch(function(error){
 		response.jsonp({response : error});
 	});

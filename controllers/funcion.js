@@ -13,8 +13,11 @@ var funcion		= sequelize.import("../models/funciones");
  * Private Functions 
  * */
 var all 			= function(request, response){
-	funcion.findAll().then(function(funcion){
-		response.jsonp(funcion);
+	funcion.findAll().then(function(funciones){
+		funciones.forEach(function(funcion){
+			funcion['dataValues'].maquinaestado = "/funcion/" + funcion['dataValues'].funcionid + '/maquinaestado';
+		});
+		response.jsonp(funciones);
 	});
 };
 var findById 		= function(request, response){
@@ -22,8 +25,11 @@ var findById 		= function(request, response){
 		where : {
 			funcionid : request.params.funcionid
 		}
-	}).then(function(funcion){
-		response.jsonp(funcion);
+	}).then(function(funciones){
+		funciones.forEach(function(funcion){
+			funcion['dataValues'].maquinaestado = "/funcion/" + funcion['dataValues'].funcionid + '/maquinaestado';
+		});
+		response.jsonp(funciones);
 	});
 };
 var create 			= function(request, response){
@@ -33,8 +39,11 @@ var create 			= function(request, response){
 		    	 descripcion : request.body.descripcion
 		     }, {transaction : transaction})
 		]);
-	}).then(function(funcion){
-		response.jsonp(funcion);
+	}).then(function(funciones){
+		funciones.forEach(function(funcion){
+			funcion['dataValues'].maquinaestado = "/funcion/" + funcion['dataValues'].funcionid + '/maquinaestado';
+		});
+		response.jsonp(funciones);
 	}).catch(function(error){
 		response.jsonp({response : error});
 	});
@@ -53,6 +62,7 @@ var updateAll 		= function(request, response){
 			} else {
 				transaction.commit();
 				funcion.findById(request.body.funcionid).then(function(funcion){
+					funcion['dataValues'].maquinaestado = "/funcion/" + funcion['dataValues'].funcionid + '/maquinaestado';
 					response.status(200).jsonp(funcion);
 				});
 			}

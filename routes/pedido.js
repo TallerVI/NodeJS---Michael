@@ -10,3 +10,6 @@ appFastplate.post('/pedido', pedido.create);
 appFastplate.put('/pedido', pedido.updateAll);
 appFastplate.patch('/pedido', pedido.updatePart);
 appFastplate.delete('/pedido/:pedidoid', pedido.deleteById);
+
+/* Complex request */
+appFastplate.get('/mesa/:mesaid/pedido', pedido.findByMesa);

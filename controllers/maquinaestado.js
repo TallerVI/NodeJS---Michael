@@ -108,6 +108,37 @@ var deleteById 		= function(request, response){
 		response.status(500).jsonp(error);
 	});
 };
+var findByFuncion	= function(request, response){
+	maquinaestado.findAll({
+		where : {
+			funcionid : request.params.funcionid
+		}
+	}).then(function(maquinaestado){
+		maquinaestado.forEach(function(item){
+			item['dataValues'].estado = "/estado/" + item['dataValues'].estadoid;
+			item['dataValues'].funcion = "/funcion/" + item['dataValues'].funcionid;
+			delete item['dataValues'].estadoid;
+			delete item['dataValues'].funcionid;
+		});
+		response.jsonp(maquinaestado);
+	});
+};
+
+var findByEstado	= function(request, response){
+	maquinaestado.findAll({
+		where : {
+			estadoid : request.params.estadoid
+		}
+	}).then(function(maquinaestado){
+		maquinaestado.forEach(function(item){
+			item['dataValues'].estado = "/estado/" + item['dataValues'].estadoid;
+			item['dataValues'].funcion = "/funcion/" + item['dataValues'].funcionid;
+			delete item['dataValues'].estadoid;
+			delete item['dataValues'].funcionid;
+		});
+		response.jsonp(maquinaestado);
+	});
+};
 
 /**
  * Export functions
@@ -119,3 +150,5 @@ exports.create 		= create;
 exports.updateAll 	= updateAll;
 exports.updatePart 	= updatePart;
 exports.deleteById 	= deleteById;
+exports.findByFuncion 	= findByFuncion;
+exports.findByEstado 	= findByEstado;

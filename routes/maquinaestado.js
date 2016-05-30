@@ -10,3 +10,6 @@ appFastplate.post('/maquinaestado', maquinaestado.create);
 appFastplate.put('/maquinaestado', maquinaestado.updateAll);
 appFastplate.patch('/maquinaestado', maquinaestado.updatePart);
 appFastplate.delete('/maquinaestado/:maquinaestadoid', maquinaestado.deleteById);
+
+appFastplate.get('/funcion/:funcionid/maquinaestado', maquinaestado.findByFuncion);
+appFastplate.get('/estado/:estadoid/maquinaestado', maquinaestado.findByEstado);
