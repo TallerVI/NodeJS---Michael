@@ -8,14 +8,14 @@
  * */
 var sequelize		= require ("../app").get("sequelize");
 var pedidodetalle		= sequelize.import("../models/pedidodetalles");
-
+var host			= require ("./host");
 /** 
  * Private Functions 
  * */
 var all 			= function(request, response){
 	pedidodetalle.findAll(pedidoDetalleUtils.getParamsForAllFromRequest(request)).then(function(pedidodetalles){
 		pedidodetalles.forEach(function(pedidodetalle){
-			pedidodetalle = pedidoDetalleUtils.toHATEOAS( pedidodetalle );
+			pedidodetalle = pedidoDetalleUtils.toHATEOAS( pedidodetalle, request, response );
 		});
 		response.jsonp(pedidodetalles);
 	});
@@ -23,7 +23,7 @@ var all 			= function(request, response){
 var findById 		= function(request, response){
 	pedidodetalle.findAll(pedidoDetalleUtils.getParamsForFindByIdFromRequest(request)).then(function(pedidosdetalles){
 		pedidosdetalles.forEach(function(pedidodetalle){
-			pedidodetalle = pedidoDetalleUtils.toHATEOAS( pedidodetalle );
+			pedidodetalle = pedidoDetalleUtils.toHATEOAS( pedidodetalle, request, response );
 		});
 		response.jsonp(pedidosdetalles);
 	});
@@ -35,7 +35,7 @@ var create 			= function(request, response){
 		]);
 	}).then(function(pedidodetalles){
 		pedidodetalles.forEach(function(pedidodetalle){
-			pedidodetalle = pedidoDetalleUtils.toHATEOAS( pedidodetalle );
+			pedidodetalle = pedidoDetalleUtils.toHATEOAS( pedidodetalle, request, response );
 		});
 		response.jsonp(pedidodetalles);
 	}).catch(function(error){
@@ -51,7 +51,7 @@ var updateAll 		= function(request, response){
 				transaction.commit();
 				pedidodetalle.findAll(pedidoDetalleUtils.getParamsForFindByIdFromRequest(request)).then(function(pedidodetalles){
 					pedidodetalles.forEach(function( pedidodetalle ){
-						pedidodetalle = pedidoDetalleUtils.toHATEOAS( pedidodetalle );
+						pedidodetalle = pedidoDetalleUtils.toHATEOAS( pedidodetalle, request, response );
 					});
 					response.status(200).jsonp(pedidodetalles);
 				});
@@ -91,9 +91,10 @@ var deleteById 		= function(request, response){
 
 var PedidoDetalleUtils = function(){};
 
-PedidoDetalleUtils.prototype.toHATEOAS = function( model ) {
-	model['dataValues'].articulo = "/articulo/" + model['dataValues'].articuloid;
-	model['dataValues'].maquinaestado = "/maquinaestado/" + model['dataValues'].maquinaestadoid;
+PedidoDetalleUtils.prototype.toHATEOAS = function( model, request, response ) {
+	var h = host.getHost(request, response);
+	model['dataValues'].articulo = h + "/articulo/" + model['dataValues'].articuloid;
+	model['dataValues'].maquinaestado = h + "/maquinaestado/" + model['dataValues'].maquinaestadoid;
 	delete model['dataValues'].articuloid;
 	delete model['dataValues'].maquinaestadoid;
 	return model;

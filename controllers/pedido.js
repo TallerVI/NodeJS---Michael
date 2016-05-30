@@ -9,6 +9,8 @@
 var sequelize		= require ("../app").get("sequelize");
 var pedido			= sequelize.import("../models/pedidos");
 var host			= require ("./host");
+
+
 /** 
  * Private Functions 
  * */
@@ -19,7 +21,7 @@ var all 			= function(request, response){
 			pedido['dataValues'].pedidodetalle = h + "/pedido/" + pedido['dataValues'].pedidoid + '/pedidodetalle';
 			pedido['dataValues'].usuario = h + "/usuario/" + pedido['dataValues'].usuarioid;
 			pedido['dataValues'].mesa = h + "/mesa/" + pedido['dataValues'].mesaid;
-			pedido['dataValues'].maquinaestado = "/maquinaestado/" + pedido['dataValues'].maquinaestadoid;
+			pedido['dataValues'].maquinaestado = h + "/maquinaestado/" + pedido['dataValues'].maquinaestadoid;
 			delete pedido['dataValues'].usuarioid;
 			delete pedido['dataValues'].mesaid;
 			delete pedido['dataValues'].maquinaestadoid;
@@ -28,16 +30,17 @@ var all 			= function(request, response){
 	});
 };
 var findById 		= function(request, response){
+	var h = host.getHost(request, response);
 	pedido.findAll({
 		where : {
 			pedidoid : request.params.pedidoid
 		}
 	}).then(function(pedidos){
 		pedidos.forEach(function( pedido ){
-			pedido['dataValues'].pedidodetalle = "/pedido/" + pedido['dataValues'].pedidoid + '/pedidodetalle';
-			pedido['dataValues'].usuario = "/usuario/" + pedido['dataValues'].usuarioid;
-			pedido['dataValues'].mesa = "/mesa/" + pedido['dataValues'].mesaid;
-			pedido['dataValues'].maquinaestado = "/maquinaestado/" + pedido['dataValues'].maquinaestadoid;
+			pedido['dataValues'].pedidodetalle = h + "/pedido/" + pedido['dataValues'].pedidoid + '/pedidodetalle';
+			pedido['dataValues'].usuario = h + "/usuario/" + pedido['dataValues'].usuarioid;
+			pedido['dataValues'].mesa = h + "/mesa/" + pedido['dataValues'].mesaid;
+			pedido['dataValues'].maquinaestado = h + "/maquinaestado/" + pedido['dataValues'].maquinaestadoid;
 			delete pedido['dataValues'].usuarioid;
 			delete pedido['dataValues'].mesaid;
 			delete pedido['dataValues'].maquinaestadoid;
@@ -46,6 +49,7 @@ var findById 		= function(request, response){
 	});
 };
 var create 			= function(request, response){
+	var h = host.getHost(request, response);
 	sequelize.transaction(function(transaction){
 		return Promise.all([
 		     pedido.create({ 
@@ -56,10 +60,10 @@ var create 			= function(request, response){
 		]);
 	}).then(function(pedidos){
 		var pedido = pedidos.pop();
-		pedido['dataValues'].pedidodetalle = "/pedido/" + pedido['dataValues'].pedidoid + '/pedidodetalle';
-		pedido['dataValues'].usuario = "/usuario/" + pedido['dataValues'].usuarioid;
-		pedido['dataValues'].mesa = "/mesa/" + pedido['dataValues'].mesaid;
-		pedido['dataValues'].maquinaestado = "/maquinaestado/" + pedido['dataValues'].maquinaestadoid;
+		pedido['dataValues'].pedidodetalle = h + "/pedido/" + pedido['dataValues'].pedidoid + '/pedidodetalle';
+		pedido['dataValues'].usuario = h + "/usuario/" + pedido['dataValues'].usuarioid;
+		pedido['dataValues'].mesa = h + "/mesa/" + pedido['dataValues'].mesaid;
+		pedido['dataValues'].maquinaestado = h + "/maquinaestado/" + pedido['dataValues'].maquinaestadoid;
 		delete pedido['dataValues'].usuarioid;
 		delete pedido['dataValues'].mesaid;
 		delete pedido['dataValues'].maquinaestadoid;
@@ -69,6 +73,7 @@ var create 			= function(request, response){
 	});
 };
 var updateAll 		= function(request, response){
+	var h = host.getHost(request, response);
 	sequelize.transaction(
 	).then(function(transaction){
 		pedido.update(
@@ -86,10 +91,10 @@ var updateAll 		= function(request, response){
 			} else {
 				transaction.commit();
 				pedido.findById(request.body.pedidoid).then(function(pedido){
-					pedido['dataValues'].pedidodetalle = "/pedido/" + pedido['dataValues'].pedidoid + '/pedidodetalle';
-					pedido['dataValues'].usuario = "/usuario/" + pedido['dataValues'].usuarioid;
-					pedido['dataValues'].mesa = "/mesa/" + pedido['dataValues'].mesaid;
-					pedido['dataValues'].maquinaestado = "/maquinaestado/" + pedido['dataValues'].maquinaestadoid;
+					pedido['dataValues'].pedidodetalle = h + "/pedido/" + pedido['dataValues'].pedidoid + '/pedidodetalle';
+					pedido['dataValues'].usuario = h + "/usuario/" + pedido['dataValues'].usuarioid;
+					pedido['dataValues'].mesa = h + "/mesa/" + pedido['dataValues'].mesaid;
+					pedido['dataValues'].maquinaestado = h + "/maquinaestado/" + pedido['dataValues'].maquinaestadoid;
 					delete pedido['dataValues'].usuarioid;
 					delete pedido['dataValues'].mesaid;
 					delete pedido['dataValues'].maquinaestadoid;
@@ -102,9 +107,11 @@ var updateAll 		= function(request, response){
 	});
 };
 var updatePart 		= function(request, response){
+	var h = host.getHost(request, response);
 	response.status(500).jsonp({ response : "Implementar updatePart" });
 };
 var deleteById 		= function(request, response){
+	var h = host.getHost(request, response);
 	sequelize.transaction(
 	).then(function(transaction){
 		pedido.destroy(
@@ -115,7 +122,7 @@ var deleteById 		= function(request, response){
 				response.status(500).jsonp({ response : "No se ha podido eliminar el pedido" });
 			} else {
 				transaction.commit();
-				response.status(200).jsonp([{ pedido : "/pedido/" + request.params.pedidoid }]);
+				response.status(200).jsonp([{ pedido : h + "/pedido/" + request.params.pedidoid }]);
 			}
 		});
 	}).catch(function(error){
@@ -124,6 +131,7 @@ var deleteById 		= function(request, response){
 };
 
 var findByMesa		= function(request, response){
+	var h = host.getHost(request, response);
 	pedido.findAll({
 		where : {
 			mesaid : request.params.mesaid,
@@ -133,10 +141,10 @@ var findByMesa		= function(request, response){
 		}
 	}).then(function(pedidos){
 		pedidos.forEach(function( pedido ){
-			pedido['dataValues'].pedidodetalle = "/pedido/" + pedido['dataValues'].pedidoid + '/pedidodetalle';
-			pedido['dataValues'].usuario = "/usuario/" + pedido['dataValues'].usuarioid;
-			pedido['dataValues'].mesa = "/mesa/" + pedido['dataValues'].mesaid;
-			pedido['dataValues'].maquinaestado = "/maquinaestado/" + pedido['dataValues'].maquinaestadoid;
+			pedido['dataValues'].pedidodetalle = h + "/pedido/" + pedido['dataValues'].pedidoid + '/pedidodetalle';
+			pedido['dataValues'].usuario = h + "/usuario/" + pedido['dataValues'].usuarioid;
+			pedido['dataValues'].mesa = h + "/mesa/" + pedido['dataValues'].mesaid;
+			pedido['dataValues'].maquinaestado = h + "/maquinaestado/" + pedido['dataValues'].maquinaestadoid;
 			delete pedido['dataValues'].usuarioid;
 			delete pedido['dataValues'].mesaid;
 			delete pedido['dataValues'].maquinaestadoid;

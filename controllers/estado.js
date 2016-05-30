@@ -8,31 +8,35 @@
  * */
 var sequelize		= require ("../app").get("sequelize");
 var estado		= sequelize.import("../models/estados");
+var host			= require ("./host");
 
 /** 
  * Private Functions 
  * */
 var all 			= function(request, response){
+	var h = host.getHost(request, response);
 	estado.findAll().then(function(estados){
 		estados.forEach(function(estado){
-			estado['dataValues'].maquinaestado = "/estado/" + estado['dataValues'].estadoid + '/maquinaestado';
+			estado['dataValues'].maquinaestado = h + "/estado/" + estado['dataValues'].estadoid + '/maquinaestado';
 		});
 		response.jsonp(estados);
 	});
 };
 var findById 		= function(request, response){
+	var h = host.getHost(request, response);
 	estado.findAll({
 		where : {
 			estadoid : request.params.estadoid
 		}
 	}).then(function(estados){
 		estados.forEach(function(estado){
-			estado['dataValues'].maquinaestado = "/estado/" + estado['dataValues'].estadoid + '/maquinaestado';
+			estado['dataValues'].maquinaestado = h + "/estado/" + estado['dataValues'].estadoid + '/maquinaestado';
 		});
 		response.jsonp(estados);
 	});
 };
 var create 			= function(request, response){
+	var h = host.getHost(request, response);
 	sequelize.transaction(function(transaction){
 		return Promise.all([
 		     estado.create({ 
@@ -41,7 +45,7 @@ var create 			= function(request, response){
 		]);
 	}).then(function(estados){
 		estados.forEach(function(estado){
-			estado['dataValues'].maquinaestado = "/estado/" + estado['dataValues'].estadoid + '/maquinaestado';
+			estado['dataValues'].maquinaestado = h + "/estado/" + estado['dataValues'].estadoid + '/maquinaestado';
 		});
 		response.jsonp(estados);
 	}).catch(function(error){
@@ -49,6 +53,7 @@ var create 			= function(request, response){
 	});
 };
 var updateAll 		= function(request, response){
+	var h = host.getHost(request, response);
 	sequelize.transaction(
 	).then(function(transaction){
 		estado.update(
@@ -71,9 +76,11 @@ var updateAll 		= function(request, response){
 	});
 };
 var updatePart 		= function(request, response){
+	var h = host.getHost(request, response);
 	response.status(500).jsonp({ response : "Implementar updatePart" });
 };
 var deleteById 		= function(request, response){
+	var h = host.getHost(request, response);
 	sequelize.transaction(
 	).then(function(transaction){
 		estado.destroy(

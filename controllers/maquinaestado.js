@@ -8,15 +8,17 @@
  * */
 var sequelize		= require ("../app").get("sequelize");
 var maquinaestado		= sequelize.import("../models/maquinaestados");
+var host			= require ("./host");
 
 /** 
  * Private Functions 
  * */
 var all 			= function(request, response){
+	var h = host.getHost(request, response);
 	maquinaestado.findAll().then(function(maquinaestado){
 		maquinaestado.forEach(function(item){
-			item['dataValues'].estado = "/estado/" + item['dataValues'].estadoid;
-			item['dataValues'].funcion = "/funcion/" + item['dataValues'].funcionid;
+			item['dataValues'].estado = h + "/estado/" + item['dataValues'].estadoid;
+			item['dataValues'].funcion = h + "/funcion/" + item['dataValues'].funcionid;
 			delete item['dataValues'].estadoid;
 			delete item['dataValues'].funcionid;
 		});
@@ -24,14 +26,15 @@ var all 			= function(request, response){
 	});
 };
 var findById 		= function(request, response){
+	var h = host.getHost(request, response);
 	maquinaestado.findAll({
 		where : {
 			maquinaestadoid : request.params.maquinaestadoid
 		}
 	}).then(function(maquinaestado){
 		maquinaestado.forEach(function(item){
-			item['dataValues'].estado = "/estado/" + item['dataValues'].estadoid;
-			item['dataValues'].funcion = "/funcion/" + item['dataValues'].funcionid;
+			item['dataValues'].estado = h + "/estado/" + item['dataValues'].estadoid;
+			item['dataValues'].funcion = h + "/funcion/" + item['dataValues'].funcionid;
 			delete item['dataValues'].estadoid;
 			delete item['dataValues'].funcionid;
 		});
@@ -39,6 +42,7 @@ var findById 		= function(request, response){
 	});
 };
 var create 			= function(request, response){
+	var h = host.getHost(request, response);
 	sequelize.transaction(function(transaction){
 		return Promise.all([
 		     maquinaestado.create({ 
@@ -48,8 +52,8 @@ var create 			= function(request, response){
 		]);
 	}).then(function(maquinaestado){
 		maquinaestado.forEach(function(item){
-			item['dataValues'].estado = "/estado/" + item['dataValues'].estadoid;
-			item['dataValues'].funcion = "/funcion/" + item['dataValues'].funcionid;
+			item['dataValues'].estado = h + "/estado/" + item['dataValues'].estadoid;
+			item['dataValues'].funcion = h + "/funcion/" + item['dataValues'].funcionid;
 			delete item['dataValues'].estadoid;
 			delete item['dataValues'].funcionid;
 		});
@@ -59,6 +63,7 @@ var create 			= function(request, response){
 	});
 };
 var updateAll 		= function(request, response){
+	var h = host.getHost(request, response);
 	sequelize.transaction(
 	).then(function(transaction){
 		maquinaestado.update(
@@ -75,8 +80,8 @@ var updateAll 		= function(request, response){
 			} else {
 				transaction.commit();
 				maquinaestado.findById(request.body.maquinaestadoid).then(function(maquinaestado){
-					maquinaestado['dataValues'].estado = "/estado/" + maquinaestado['dataValues'].estadoid;
-					maquinaestado['dataValues'].funcion = "/funcion/" + maquinaestado['dataValues'].funcionid;
+					maquinaestado['dataValues'].estado = h + "/estado/" + maquinaestado['dataValues'].estadoid;
+					maquinaestado['dataValues'].funcion = h + "/funcion/" + maquinaestado['dataValues'].funcionid;
 					delete maquinaestado['dataValues'].estadoid;
 					delete maquinaestado['dataValues'].funcionid;
 					response.status(200).jsonp(maquinaestado);
@@ -88,9 +93,11 @@ var updateAll 		= function(request, response){
 	});
 };
 var updatePart 		= function(request, response){
+	var h = host.getHost(request, response);
 	response.status(500).jsonp({ response : "Implementar updatePart" });
 };
 var deleteById 		= function(request, response){
+	var h = host.getHost(request, response);
 	sequelize.transaction(
 	).then(function(transaction){
 		maquinaestado.destroy(
@@ -101,7 +108,7 @@ var deleteById 		= function(request, response){
 				response.status(500).jsonp({ response : "No se ha podido eliminar el maquinaestado" });
 			} else {
 				transaction.commit();
-				response.status(200).jsonp([{ maquinaestado : "/maquinaestado/" + request.params.maquinaestadoid }]);
+				response.status(200).jsonp([{ maquinaestado : h + "/maquinaestado/" + request.params.maquinaestadoid }]);
 			}
 		});
 	}).catch(function(error){
@@ -109,14 +116,15 @@ var deleteById 		= function(request, response){
 	});
 };
 var findByFuncion	= function(request, response){
+	var h = host.getHost(request, response);
 	maquinaestado.findAll({
 		where : {
 			funcionid : request.params.funcionid
 		}
 	}).then(function(maquinaestado){
 		maquinaestado.forEach(function(item){
-			item['dataValues'].estado = "/estado/" + item['dataValues'].estadoid;
-			item['dataValues'].funcion = "/funcion/" + item['dataValues'].funcionid;
+			item['dataValues'].estado = h + "/estado/" + item['dataValues'].estadoid;
+			item['dataValues'].funcion = h + "/funcion/" + item['dataValues'].funcionid;
 			delete item['dataValues'].estadoid;
 			delete item['dataValues'].funcionid;
 		});
@@ -125,14 +133,15 @@ var findByFuncion	= function(request, response){
 };
 
 var findByEstado	= function(request, response){
+	var h = host.getHost(request, response);
 	maquinaestado.findAll({
 		where : {
 			estadoid : request.params.estadoid
 		}
 	}).then(function(maquinaestado){
 		maquinaestado.forEach(function(item){
-			item['dataValues'].estado = "/estado/" + item['dataValues'].estadoid;
-			item['dataValues'].funcion = "/funcion/" + item['dataValues'].funcionid;
+			item['dataValues'].estado = h + "/estado/" + item['dataValues'].estadoid;
+			item['dataValues'].funcion = h + "/funcion/" + item['dataValues'].funcionid;
 			delete item['dataValues'].estadoid;
 			delete item['dataValues'].funcionid;
 		});
