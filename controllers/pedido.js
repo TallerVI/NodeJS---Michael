@@ -132,24 +132,22 @@ var deleteById 		= function(request, response){
 
 var findByMesa		= function(request, response){
 	var h = host.getHost(request, response);
-	pedido.findAll({
+	pedido.findOne({
 		where : {
 			mesaid : request.params.mesaid,
 			maquinaestadoid : { 
 				$ne : 10
 			}
-		}
-	}).then(function(pedidos){
-		pedidos.forEach(function( pedido ){
-			pedido['dataValues'].pedidodetalle = h + "/pedido/" + pedido['dataValues'].pedidoid + '/pedidodetalle';
-			pedido['dataValues'].usuario = h + "/usuario/" + pedido['dataValues'].usuarioid;
-			pedido['dataValues'].mesa = h + "/mesa/" + pedido['dataValues'].mesaid;
-			pedido['dataValues'].maquinaestado = h + "/maquinaestado/" + pedido['dataValues'].maquinaestadoid;
-			delete pedido['dataValues'].usuarioid;
-			delete pedido['dataValues'].mesaid;
-			delete pedido['dataValues'].maquinaestadoid;
-		});
-		response.jsonp(pedidos);
+		},
+	}).then(function(pedido){
+		pedido['dataValues'].pedidodetalle = h + "/pedido/" + pedido['dataValues'].pedidoid + '/pedidodetalle';
+		pedido['dataValues'].usuario = h + "/usuario/" + pedido['dataValues'].usuarioid;
+		pedido['dataValues'].mesa = h + "/mesa/" + pedido['dataValues'].mesaid;
+		pedido['dataValues'].maquinaestado = h + "/maquinaestado/" + pedido['dataValues'].maquinaestadoid;
+		delete pedido['dataValues'].usuarioid;
+		delete pedido['dataValues'].mesaid;
+		delete pedido['dataValues'].maquinaestadoid;
+		response.jsonp(pedido);
 	});
 };
 
